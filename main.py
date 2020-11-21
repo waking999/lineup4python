@@ -167,6 +167,52 @@ def checkWinRule1Vertical(putCol, putRow):
 
 
 """
+"""
+
+
+def checkWinRule1DiagonalRT2LB(putCol, putRow):
+    # diagonal: right top to left bottom
+    countAbove = 0
+    countBelow = 0
+    for i in range(1, max(cols - putCol, rows - putRow) + 1):
+        if isTheSameColor(putCol + i, putRow - i):
+            countAbove += 1
+        else:
+            break
+
+    for i in range(1, max(cols, rows) + 1):
+        if isTheSameColor(putCol - i, putRow + i):
+            countBelow += 1
+        else:
+            break
+
+    return countAbove + countBelow + 1 >= numToWin
+
+
+"""
+"""
+
+
+def checkWinRule1DiagnoalLT2RB(putCol, putRow):
+    # diagonal: left top to right bottom
+    countAbove = 0
+    countBelow = 0
+
+    for i in range(1, max(cols - putCol, rows - putRow) + 1):
+        if isTheSameColor(putCol - i, putRow - i):
+            countAbove += 1
+        else:
+            break
+    for i in range(1, max(cols, rows) + 1):
+        if isTheSameColor(putCol + i, putRow + i):
+            countBelow += 1
+        else:
+            break
+
+    return countAbove + countBelow + 1 >= numToWin
+
+
+"""
 Rule 1: connected under the desired count
 """
 
@@ -178,11 +224,10 @@ def checkWinRule1(putCol, putRow):
     if checkWinRule1Vertical(putCol, putRow):
         return True
 
-    # if (checkWinRule1DiagonalRT2LB(putCol, putRow)):
-    #   return True
+    if checkWinRule1DiagonalRT2LB(putCol, putRow):
+        return True
 
-    # return checkWinRule1DiagnoalLT2RB(putCol, putRow)
-    return False
+    return checkWinRule1DiagnoalLT2RB(putCol, putRow)
 
 
 """
@@ -226,7 +271,7 @@ def checkWin(putCol, putRow):
 
 def gameWinLose(putCol, putRow):
     print(board)
-    print(putCol, putRow)
+
     won = checkWin(putCol, putRow)
 
     if won:
@@ -234,7 +279,6 @@ def gameWinLose(putCol, putRow):
         screen.blit(textsurface, (0, 0))
         pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
 
-    print(blankCount)
     if blankCount == 0:
         textsurface = connect4Font.render('Nobody Won!!!', False, (0, 0, 0))
         screen.blit(textsurface, (0, 0))
@@ -249,7 +293,7 @@ def putChip(pos):
     global blankCount
 
     col, row = getMouseClickPos(pos)
-    print(col, row)
+
     showChip(col)
 
     # the put command below flattens the 2D array
