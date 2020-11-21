@@ -71,7 +71,7 @@ def drawBoard():
 def getMouseClickPos(pos):
     col = int(pos[0] / cWidth)
     row = int(pos[1] / cHeight)
-    return (col, row)
+    return col, row
 
 
 """Simulate chips motion"""
@@ -108,7 +108,7 @@ if the position is in the board scope
 
 
 def isValidPos(col, row):
-    return col >= 0 and col < cols and row >= 0 and row < rows
+    return 0 <= col < cols and 0 <= row < rows
 
 
 """
@@ -117,12 +117,12 @@ if the position has the same color chip as the current round's color
 
 
 def isTheSameColor(col, row):
-    if (not isValidPos(col, row)):
+    if not isValidPos(col, row):
         return False
     if board[col][row] == CELL_BLANK:
         return False
 
-    return board[col][row] == CELL_RED if redRound else CELL_YELLOW
+    return board[col][row] == (CELL_RED if redRound else CELL_YELLOW)
 
 
 """
@@ -136,17 +136,34 @@ def checkWinRule1Horizon(putCol, putRow):
     countRight = 0
     # leftwards
     for i in range(putCol - 1, -1, -1):
-        if (isTheSameColor(i, putRow)):
+        if isTheSameColor(i, putRow):
             countLeft += 1
         else:
             break
     # rightwards
     for i in range(putCol + 1, cols):
-        if (isTheSameColor(i, putRow)):
+        if isTheSameColor(i, putRow):
             countRight += 1
         else:
             break
     return countLeft + countRight + 1 >= numToWin
+
+
+"""
+"""
+
+
+def checkWinRule1Vertical(putCol, putRow):
+    # vertical: top to bottom
+    countAbove = 0
+    countBelow = 0
+    for i in range(1, rows):
+        if isTheSameColor(putCol, putRow + i):
+            countBelow += 1
+        else:
+            break
+
+    return countAbove + countBelow + 1 >= numToWin
 
 
 """
@@ -155,11 +172,11 @@ Rule 1: connected under the desired count
 
 
 def checkWinRule1(putCol, putRow):
-    if (checkWinRule1Horizon(putCol, putRow)):
+    if checkWinRule1Horizon(putCol, putRow):
         return True
 
-    # if (checkWinRule1Vertical(putCol, putRow)):
-    #    return True
+    if checkWinRule1Vertical(putCol, putRow):
+        return True
 
     # if (checkWinRule1DiagonalRT2LB(putCol, putRow)):
     #   return True
@@ -167,18 +184,24 @@ def checkWinRule1(putCol, putRow):
     # return checkWinRule1DiagnoalLT2RB(putCol, putRow)
     return False
 
+
 """
 
 """
+
+
 def isValidDanger(danger, pos):
     return danger[pos[0]][pos[1]] and toBePut[pos[0]] == pos[1]
 
+
 """
 """
+
+
 def getCurrentRoundValidDanger(danger):
     count = 0
     for pos in currentTurnDanger:
-        if (isValidDanger(danger, pos)):
+        if isValidDanger(danger, pos):
             count += 1
 
     return count
@@ -196,7 +219,7 @@ def checkWinRule2():
 
 
 def checkWin(putCol, putRow):
-    if (checkWinRule1(putCol, putRow)):
+    if checkWinRule1(putCol, putRow):
         return True
     return checkWinRule2()
 
