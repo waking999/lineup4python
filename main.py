@@ -287,7 +287,7 @@ def gameWinLose(putCol, putRow):
 def dangerConditionSet(danger, condition, pos):
     if condition:
         for po in pos:
-            if isEmpty(po[0], po[1]):
+            if isValidPos(po[0], po[1]) and isEmpty(po[0], po[1]):
                 danger[po[0]][po[1]] = True
                 currentTurnDanger.add((po[0], po[1]))
 
@@ -377,61 +377,61 @@ def addOtherSideDangerVertical(putCol, putRow):
 
 
 """
-diagonal: right top to left bottom, continue at both
+diagonal: left top to right bottom, continue at both side
 """
 
 
-def addOtherSideDangerDiagonalRT2LB1(putCol, putRow):
-    irt = 1
-    while isValidPos(putCol + irt, putRow - irt) and isTheSameColor(putCol + irt, putRow - irt):
-        irt += 1
+def addOtherSideDangerDiagonalLT2RB1(putCol, putRow):
+    ilt = 1
+    while isValidPos(putCol - ilt, putRow - ilt) and isTheSameColor(putCol - ilt, putRow - ilt):
+        ilt += 1
 
-    ilb = -1
-    while isValidPos(putCol + ilb, putRow - ilb) and isTheSameColor(putCol + ilb, putRow - ilb):
-        ilb -= 1
+    irb = 1
+    while isValidPos(putCol + irb, putRow + irb) and isTheSameColor(putCol + irb, putRow + irb):
+        irb += 1
 
-    dangerConditionSet(yellowDanger if redRound else redDanger, irt - ilb >= numToWin,
-                       [[putCol + irt, putRow - irt], [putCol + ilb, putRow - ilb]])
-
-
-"""
-diagonal: right top to left bottom, continue at right top, jump at left bottom
-"""
-
-
-def addOtherSideDangerDiagonalRT2LB2(putCol, putRow):
-    irt = 1
-    while isValidPos(putCol + irt, putRow - irt) and isTheSameColor(putCol + irt, putRow - irt):
-        irt += 1
-
-    ilb = -1
-    if isEmpty(putCol + ilb, putRow - ilb) and isTheSameColor(putCol + ilb - 1, putRow - ilb + 1):
-        ilb -= 1
-        while isValidPos(putCol + ilb, putRow - ilb) and isTheSameColor(putCol + ilb, putRow - ilb):
-            ilb -= 1
-
-        dangerConditionSet(yellowDanger if redRound else redDanger, irt - ilb - 1 >= numToWin,
-                           [[putCol - 1, putRow + 1]])
+    dangerConditionSet(yellowDanger if redRound else redDanger, irb + ilt >= numToWin,
+                       [[putCol - ilt, putRow - ilt], [putCol + irb, putRow + irb]])
 
 
 """
-diagonal: right top to left bottom, continue at left bottom, jump at right top
+diagonal: left top to right bottom, continue at left top, jump at right bottom
 """
 
 
-def addOtherSideDangerDiagonalRT2LB3(putCol, putRow):
-    ilb = -1
-    while isValidPos(putCol + ilb, putRow - ilb) and isTheSameColor(putCol + ilb, putRow - ilb):
-        ilb -= 1
+def addOtherSideDangerDiagonalLT2RB2(putCol, putRow):
+    ilt = 1
+    while isValidPos(putCol - ilt, putRow - ilt) and isTheSameColor(putCol - ilt, putRow - ilt):
+        ilt += 1
 
-    irt = 1
-    if isEmpty(putCol + irt, putRow - irt) and isTheSameColor(putCol + irt + 1, putRow - irt - 1):
-        irt += 1
-        while isValidPos(putCol + irt, putRow - irt) and isTheSameColor(putCol + irt, putRow - irt):
-            irt += 1
+    irb = 1
+    if isEmpty(putCol + irb, putRow + irb) and isTheSameColor(putCol + irb + 1, putRow + irb + 1):
+        irb += 1
+        while isValidPos(putCol + irb, putRow + irb) and isTheSameColor(putCol + irb, putRow + irb):
+            irb += 1
 
-        dangerConditionSet(yellowDanger if redRound else redDanger, irt - ilb - 1 >= numToWin,
-                           [[putCol + 1, putRow - 1]])
+        dangerConditionSet(yellowDanger if redRound else redDanger, irb + ilt - 1 >= numToWin,
+                           [[putCol + 1, putRow + 1]])
+
+
+"""
+diagonal: left top to right bottom, continue at right bottom, jump at left top
+"""
+
+
+def addOtherSideDangerDiagonalLT2RB3(putCol, putRow):
+    irb = 1
+    while isValidPos(putCol + irb, putRow + irb) and isTheSameColor(putCol + irb, putRow + irb):
+        irb += 1
+
+    ilt = 1
+    if isEmpty(putCol - ilt, putRow - ilt) and isTheSameColor(putCol - ilt - 1, putRow - ilt - 1):
+        ilt += 1
+        while isValidPos(putCol - ilt, putRow - ilt) and isTheSameColor(putCol - ilt, putRow- ilt):
+            ilt += 1
+
+        dangerConditionSet(yellowDanger if redRound else redDanger, irb + ilt - 1 >= numToWin,
+                           [[putCol - 1, putRow - 1]])
 
 
 """
@@ -439,10 +439,10 @@ add danger in diagonal direction: right top to left bottom
 """
 
 
-def addOtherSideDangerDiagonalRT2LB(putCol, putRow):
-    addOtherSideDangerDiagonalRT2LB1(putCol, putRow)
-    addOtherSideDangerDiagonalRT2LB2(putCol, putRow)
-    addOtherSideDangerDiagonalRT2LB3(putCol, putRow)
+def addOtherSideDangerDiagonalLT2RB(putCol, putRow):
+    addOtherSideDangerDiagonalLT2RB1(putCol, putRow)
+    addOtherSideDangerDiagonalLT2RB2(putCol, putRow)
+    addOtherSideDangerDiagonalLT2RB3(putCol, putRow)
 
 
 """
@@ -461,9 +461,9 @@ def addOtherSideDanger(putCol, putRow):
     # check danger on vertical level
     addOtherSideDangerVertical(putCol, putRow)
     # check danger on diagonal right top to left bottom level
-    addOtherSideDangerDiagonalRT2LB(putCol, putRow)
+    # addOtherSideDangerDiagonalRT2LB(putCol, putRow)
     # check danger on diagonal left top to right bottom level;
-    # addDangerDiagonalLT2RB(putCol, putRow, isRedTurn);
+    addOtherSideDangerDiagonalLT2RB(putCol, putRow)
 
     print(yellowDanger)
 
