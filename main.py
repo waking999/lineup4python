@@ -310,6 +310,52 @@ def addOtherSideDangerHorizon1(putCol, putRow):
     dangerConditionSet(yellowDanger if redRound else redDanger, rightMostPos - leftMostPos >= numToWin,
                        [[leftMostPos, putRow], [rightMostPos, putRow]])
 
+# def addOtherSideDangerHorizon1(putCol, putRow):
+#     leftEmpCnt = 0
+#     rightEmpCnt = 0
+#     consCnt = 0
+#     leftEmpPos = []
+#     rightEmpPos = []
+#     pos = []
+#
+#     leftMostCol = putCol - 1
+#     while isValidPos(leftMostCol, putRow):
+#         if isTheSameColor(leftMostCol, putRow):
+#             leftMostCol -= 1
+#             consCnt += 1
+#             continue
+#         elif isEmpty(leftMostCol, putRow) and leftEmpCnt == 0:
+#             leftEmpPos = [leftMostCol, putRow]
+#             leftEmpCnt += 1
+#             leftMostCol -= 1
+#             continue
+#         else:
+#             break
+#
+#     rightMostCol = putCol + 1
+#     while isValidPos(rightMostCol, putRow):
+#         if isTheSameColor(rightMostCol, putRow):
+#             rightMostCol += 1
+#             consCnt += 1
+#             continue
+#         elif isEmpty(rightMostCol, putRow) and rightEmpCnt == 0:
+#             rightEmpPos = [rightMostCol, putRow]
+#             rightEmpCnt += 1
+#             rightMostCol += 1
+#             continue
+#         else:
+#             break
+#     print(leftEmpCnt,rightEmpCnt,consCnt)
+#     if leftEmpCnt == 1 and rightEmpCnt == 1:
+#         pos = [[leftMostCol, putRow], [rightMostCol, putRow]]
+#     elif leftEmpCnt > 1 and rightEmpCnt == 1:
+#         pos = [leftEmpPos]
+#     elif leftEmpCnt == 1 and rightEmpCnt > 1:
+#         pos = [rightEmpPos]
+#
+#     dangerConditionSet(yellowDanger if redRound else redDanger, consCnt +2>= numToWin,
+#                        pos)
+
 
 """
 horizon 2: continue at left,but jump at right
@@ -427,7 +473,7 @@ def addOtherSideDangerDiagonalLT2RB3(putCol, putRow):
     ilt = 1
     if isEmpty(putCol - ilt, putRow - ilt) and isTheSameColor(putCol - ilt - 1, putRow - ilt - 1):
         ilt += 1
-        while isValidPos(putCol - ilt, putRow - ilt) and isTheSameColor(putCol - ilt, putRow- ilt):
+        while isValidPos(putCol - ilt, putRow - ilt) and isTheSameColor(putCol - ilt, putRow - ilt):
             ilt += 1
 
         dangerConditionSet(yellowDanger if redRound else redDanger, irb + ilt - 1 >= numToWin,
