@@ -76,7 +76,7 @@ def getMouseClickPos(pos):
 """Simulate chips motion"""
 
 
-def showChip(col):
+def showChipMotion(col):
     CHIP_COLOR = CHIP_RED_COLOR if redRound else CHIP_YELLOW_COLOR
 
     centerX = col * cWidth + cWidth / 2
@@ -351,7 +351,7 @@ def addOtherSideDangerHorizon3(putCol, putRow):
 
 
 """
-danger at horizon direction
+add danger in horizon direction
 """
 
 
@@ -362,7 +362,22 @@ def addOtherSideDangerHorizon(putCol, putRow):
 
 
 """
-When a new piece is put and it may become a danger to the other side, we need add it in 4 directions: 
+add danger in vertical direction
+"""
+
+
+def addOtherSideDangerVertical(putCol, putRow):
+    topMostPos = putRow - 1
+    bottomMostPos = putRow + 1
+    while isValidPos(putCol, bottomMostPos) and isTheSameColor(putCol, bottomMostPos):
+        bottomMostPos += 1
+
+    dangerConditionSet(yellowDanger if redRound else redDanger, bottomMostPos - topMostPos >= numToWin,
+                       [[putCol, topMostPos]])
+
+
+"""
+When a new chip is put and it may become a danger to the other side, we need add it in 4 directions: 
 horizon, 
 vertical, 
 right top to left bottom, and 
@@ -375,7 +390,7 @@ def addOtherSideDanger(putCol, putRow):
     # check danger on horizon level
     addOtherSideDangerHorizon(putCol, putRow)
     # check danger on vertical level
-    # addDangerVertical(putCol, putRow, isRedTurn);
+    addOtherSideDangerVertical(putCol, putRow)
     # check danger on diagonal right top to left bottom level
     # addDangerDiagonalRT2LB(putCol, putRow, isRedTurn);
     # check danger on diagonal left top to right bottom level;
@@ -395,6 +410,7 @@ def clearOwnSideDanger(col, row):
 
 
 """
+put a chip
 """
 
 
@@ -402,20 +418,23 @@ def putChip(pos):
     global redRound
     global blankCount
 
-    col, row = getMouseClickPos(pos)
+    col = getMouseClickPos(pos)[0]
+    row = currentRowsOfEachCol[col]
 
-    showChip(col)
+    # show chip's motion
+    showChipMotion(col)
 
     # the put command below flattens the 2D array
-    position = [int(col * rows + currentRowsOfEachCol[col])]
+    position = [int(col * rows + row)]
     np.put(board, position, CELL_RED if redRound else CELL_YELLOW)
 
     blankCount -= 1
 
-    addOtherSideDanger(col, currentRowsOfEachCol[col])
-    clearOwnSideDanger(col, currentRowsOfEachCol[col])
+    # add other side's danger and clear own side danger
+    addOtherSideDanger(col, row)
+    clearOwnSideDanger(col, row)
 
-    gameWinLose(col, currentRowsOfEachCol[col])
+    gameWinLose(col, row)
 
     currentRowsOfEachCol[col] -= 1
     redRound = not redRound
