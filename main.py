@@ -41,7 +41,7 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption('Connect 4')
 
 """
-draw the board, including background and horizen and vertical lines
+draw the board, including background and horizon and vertical lines
 """
 
 
@@ -198,7 +198,7 @@ def checkWinRule1DiagonalRT2LB(putCol, putRow):
 """
 
 
-def checkWinRule1DiagnoalLT2RB(putCol, putRow):
+def checkWinRule1DiagonalLT2RB(putCol, putRow):
     # diagonal: left top to right bottom
     countAbove = 0
     countBelow = 0
@@ -224,7 +224,7 @@ Rule 1: connected under the desired count
 
 def checkWinRule1(putCol, putRow):
     return checkWinRule1Horizon(putCol, putRow) or checkWinRule1Vertical(putCol, putRow) or checkWinRule1DiagonalRT2LB(
-        putCol, putRow) or checkWinRule1DiagnoalLT2RB(putCol, putRow)
+        putCol, putRow) or checkWinRule1DiagonalLT2RB(putCol, putRow)
 
 
 """
@@ -250,7 +250,7 @@ def getCurrentRoundValidDanger(danger):
 
 
 """
-Rule 2: Although no desired number of chips connected, but another player can not stop curent player's win
+Rule 2: Although no desired number of chips connected, but another player can not stop current player's win
 """
 
 
@@ -270,13 +270,13 @@ def gameWinLose(putCol, putRow):
     won = checkWin(putCol, putRow)
 
     if won:
-        textsurface = connect4Font.render(('Red' if redRound else 'Yellow') + ' Won!!!', False, (0, 0, 0))
-        screen.blit(textsurface, (0, 0))
+        textSurface = connect4Font.render(('Red' if redRound else 'Yellow') + ' Won!!!', False, (0, 0, 0))
+        screen.blit(textSurface, (0, 0))
         pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
 
     if blankCount == 0:
-        textsurface = connect4Font.render('Nobody Won!!!', False, (0, 0, 0))
-        screen.blit(textsurface, (0, 0))
+        textSurface = connect4Font.render('Nobody Won!!!', False, (0, 0, 0))
+        screen.blit(textSurface, (0, 0))
         pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
 
 
@@ -377,6 +377,75 @@ def addOtherSideDangerVertical(putCol, putRow):
 
 
 """
+diagonal: right top to left bottom, continue at both
+"""
+
+
+def addOtherSideDangerDiagonalRT2LB1(putCol, putRow):
+    irt = 1
+    while isValidPos(putCol + irt, putRow - irt) and isTheSameColor(putCol + irt, putRow - irt):
+        irt += 1
+
+    ilb = -1
+    while isValidPos(putCol + ilb, putRow - ilb) and isTheSameColor(putCol + ilb, putRow - ilb):
+        ilb -= 1
+
+    dangerConditionSet(yellowDanger if redRound else redDanger, irt - ilb >= numToWin,
+                       [[putCol + irt, putRow - irt], [putCol + ilb, putRow - ilb]])
+
+
+"""
+diagonal: right top to left bottom, continue at right top, jump at left bottom
+"""
+
+
+def addOtherSideDangerDiagonalRT2LB2(putCol, putRow):
+    irt = 1
+    while isValidPos(putCol + irt, putRow - irt) and isTheSameColor(putCol + irt, putRow - irt):
+        irt += 1
+
+    ilb = -1
+    if isEmpty(putCol + ilb, putRow - ilb) and isTheSameColor(putCol + ilb - 1, putRow - ilb + 1):
+        ilb -= 1
+        while isValidPos(putCol + ilb, putRow - ilb) and isTheSameColor(putCol + ilb, putRow - ilb):
+            ilb -= 1
+
+        dangerConditionSet(yellowDanger if redRound else redDanger, irt - ilb - 1 >= numToWin,
+                           [[putCol - 1, putRow + 1]])
+
+
+"""
+diagonal: right top to left bottom, continue at left bottom, jump at right top
+"""
+
+
+def addOtherSideDangerDiagonalRT2LB3(putCol, putRow):
+    ilb = -1
+    while isValidPos(putCol + ilb, putRow - ilb) and isTheSameColor(putCol + ilb, putRow - ilb):
+        ilb -= 1
+
+    irt = 1
+    if isEmpty(putCol + irt, putRow - irt) and isTheSameColor(putCol + irt + 1, putRow - irt - 1):
+        irt += 1
+        while isValidPos(putCol + irt, putRow - irt) and isTheSameColor(putCol + irt, putRow - irt):
+            irt += 1
+
+        dangerConditionSet(yellowDanger if redRound else redDanger, irt - ilb - 1 >= numToWin,
+                           [[putCol + 1, putRow - 1]])
+
+
+"""
+add danger in diagonal direction: right top to left bottom
+"""
+
+
+def addOtherSideDangerDiagonalRT2LB(putCol, putRow):
+    addOtherSideDangerDiagonalRT2LB1(putCol, putRow)
+    addOtherSideDangerDiagonalRT2LB2(putCol, putRow)
+    addOtherSideDangerDiagonalRT2LB3(putCol, putRow)
+
+
+"""
 When a new chip is put and it may become a danger to the other side, we need add it in 4 directions: 
 horizon, 
 vertical, 
@@ -392,7 +461,7 @@ def addOtherSideDanger(putCol, putRow):
     # check danger on vertical level
     addOtherSideDangerVertical(putCol, putRow)
     # check danger on diagonal right top to left bottom level
-    # addDangerDiagonalRT2LB(putCol, putRow, isRedTurn);
+    addOtherSideDangerDiagonalRT2LB(putCol, putRow)
     # check danger on diagonal left top to right bottom level;
     # addDangerDiagonalLT2RB(putCol, putRow, isRedTurn);
 
@@ -400,6 +469,7 @@ def addOtherSideDanger(putCol, putRow):
 
 
 """
+When a new chip is put, it will make the position where it is put become safe to itself
 """
 
 
