@@ -511,7 +511,7 @@ def addOtherSideDanger(putCol, putRow):
     # check danger on diagonal left top to right bottom level;
     addOtherSideDangerDiagonalLT2RB(putCol, putRow)
 
-    print(yellowDanger)
+    #print(yellowDanger)
 
 
 """
@@ -522,7 +522,7 @@ When a new chip is put, it will make the position where it is put become safe to
 def clearOwnSideDanger(col, row):
     position = [int(col * rows + row)]
     np.put(redDanger if redRound else yellowDanger, position, False)
-    print(yellowDanger)
+    #print(yellowDanger)
 
 
 """
